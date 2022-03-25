@@ -52,7 +52,10 @@ class BatchMixin(ExtendedDataClassMixin):
     @classmethod
     def _val_to_device(cls, v, device, non_blocking=False, copy=False):
         if isinstance(v, torch.Tensor):
-            return v.to(device=device, non_blocking=non_blocking, copy=copy)
+            if isinstance(device, torch.device):
+                return v.to(device=device, non_blocking=non_blocking, copy=copy)
+            else:
+                return v
         else:
             return v
 

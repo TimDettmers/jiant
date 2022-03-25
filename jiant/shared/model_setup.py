@@ -33,6 +33,7 @@ def create_optimizer(
     warmup_proportion,
     optimizer_epsilon=1e-8,
     optimizer_type="adam",
+    weight_decay=0.01,
     verbose=False,
 ):
     return create_optimizer_from_params(
@@ -43,6 +44,7 @@ def create_optimizer(
         warmup_proportion=warmup_proportion,
         optimizer_epsilon=optimizer_epsilon,
         optimizer_type=optimizer_type,
+        weight_decay=weight_decay,
         verbose=verbose,
     )
 
@@ -55,6 +57,7 @@ def create_optimizer_from_params(
     warmup_proportion,
     optimizer_epsilon=1e-8,
     optimizer_type="adam",
+    weight_decay=0.01,
     verbose=False,
 ):
     # Prepare optimizer
@@ -66,11 +69,11 @@ def create_optimizer_from_params(
         "adapter.up_project.weight",
         "weighted_sum.weights",
     ]
-    if verbose:
-        print("No optimizer decay for:")
-        for n, p in named_parameters:
-            if any(nd in n for nd in no_decay):
-                print(f"  {n}")
+    #if verbose:
+    #    print("No optimizer decay for:")
+    #    for n, p in named_parameters:
+    #        if any(nd in n for nd in no_decay):
+    #            print(f"  {n}")
 
     used_named_parameters = [
         (n, p) for n, p in named_parameters if p.requires_grad and "weighted_sum.weights" not in n
@@ -82,7 +85,7 @@ def create_optimizer_from_params(
     optimizer_grouped_parameters = [
         {
             "params": [p for n, p in used_named_parameters if not any(nd in n for nd in no_decay)],
-            "weight_decay": 0.01,
+            "weight_decay": weight_decay,
         },
         {
             "params": [p for n, p in used_named_parameters if any(nd in n for nd in no_decay)],

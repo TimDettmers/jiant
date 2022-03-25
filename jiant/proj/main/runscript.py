@@ -44,6 +44,7 @@ class RunConfiguration(zconf.RunConfig):
 
     # === Training Learning Parameters === #
     learning_rate = zconf.attr(default=1e-5, type=float)
+    weight_decay = zconf.attr(default=0.01, type=float)
     adam_epsilon = zconf.attr(default=1e-8, type=float)
     max_grad_norm = zconf.attr(default=1.0, type=float)
     optimizer_type = zconf.attr(default="adam", type=str)
@@ -55,6 +56,7 @@ class RunConfiguration(zconf.RunConfig):
     local_rank = zconf.attr(default=-1, type=int)
     server_ip = zconf.attr(default="", type=str)
     server_port = zconf.attr(default="", type=str)
+    print(fp16)
 
 
 @zconf.run_config
@@ -66,7 +68,7 @@ def setup_runner(
     args: RunConfiguration,
     jiant_task_container: container_setup.JiantTaskContainer,
     quick_init_out,
-    verbose: bool = True,
+    verbose: bool = False,
 ) -> jiant_runner.JiantRunner:
     """Setup jiant model, optimizer, and runner, and return runner.
 
@@ -101,6 +103,7 @@ def setup_runner(
         warmup_steps=jiant_task_container.global_train_config.warmup_steps,
         warmup_proportion=None,
         optimizer_type=args.optimizer_type,
+        weight_decay=args.weight_decay,
         verbose=verbose,
     )
     jiant_model, optimizer = model_setup.raw_special_model_setup(

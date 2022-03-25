@@ -169,10 +169,10 @@ def load_encoder_from_transformers_weights(
         else:
             remainder_weights_dict[k] = v
     encoder.load_state_dict(load_weights_dict, strict=False)
-    if remainder_weights_dict:
-        warnings.warn(
-            "The following weights were not loaded: {}".format(remainder_weights_dict.keys())
-        )
+    #if remainder_weights_dict:
+    #    warnings.warn(
+    #        "The following weights were not loaded: {}".format(remainder_weights_dict.keys())
+    #    )
     if return_remainder:
         return remainder_weights_dict
 
